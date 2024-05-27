@@ -121,7 +121,6 @@ def insurance_underwriting():
     Applicant Information:
     name: {st.session_state.form1_data['name']}
     Age: {st.session_state.form1_data['age']}
-    Address: {st.session_state.form1_data['address']}
     Personal and Health Information:
     Occupation: {st.session_state.form2_data['occupation']}
     Annual Income: {st.session_state.form2_data['annual_income']}
@@ -165,7 +164,7 @@ def insurance_underwriting():
 def main():
     # Initialize session state to store form data
     if 'form1_data' not in st.session_state:
-        st.session_state.form1_data = {"name": "", "age": "", "address": ""}
+        st.session_state.form1_data = {"name": "", "age": ""}
     if 'form2_data' not in st.session_state:
         st.session_state.form2_data = {"occupation": "", "annual_income": "", "marital_status": "", "dependents": "", "medical_history": "", "lifestyle": "", "family_medical_history": ""}
 
@@ -177,9 +176,8 @@ def main():
         with st.form(key='form1'):
             st.session_state.form1_data['name'] = st.text_input("Enter your name:", st.session_state.form1_data['name'], placeholder="John Dae")
             st.session_state.form1_data['age'] = st.text_input("Enter your age:", st.session_state.form1_data['age'], placeholder="35")
-            st.session_state.form1_data['address'] = st.text_input("Enter your Address:", st.session_state.form1_data['address'], placeholder="123, Elm Street,Springfield")
             submit_button = st.form_submit_button(label='Submit Applicant Details')
-            if st.session_state.form1_data['name'] == "" or st.session_state.form1_data['age'] == "" or st.session_state.form1_data['address'] == "":
+            if st.session_state.form1_data['name'] == "" or st.session_state.form1_data['age'] == "":
                 st.error("Please fill All details")
 
     elif page == "Personal And Health Information":
