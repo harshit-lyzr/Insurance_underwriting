@@ -1,8 +1,14 @@
+import os
+
 import streamlit as st
 from lyzr_automata.ai_models.openai import OpenAIModel
 from lyzr_automata import Agent,Task
 from lyzr_automata.pipelines.linear_sync_pipeline import LinearSyncPipeline
 from PIL import Image
+from dotenv import load_dotenv
+
+load_dotenv()
+api = os.getenv("OPENAI_API_KEY")
 
 st.set_page_config(
     page_title="Insurance Underwriting Expert🏦",
@@ -28,18 +34,15 @@ st.sidebar.image(image, width=150)
 # App title and introduction
 st.sidebar.title("Insurance Underwriting Expert")
 st.sidebar.markdown("## Welcome to the Lyzr Insurance Underwriting Expert!")
-api = st.sidebar.text_input("Enter our OPENAI API KEY Here", type="password")
-if api:
-    openai_model = OpenAIModel(
-        api_key=api,
-        parameters={
-            "model": "gpt-4-turbo-preview",
-            "temperature": 0.2,
-            "max_tokens": 1500,
-        },
-    )
-else:
-    st.sidebar.error("Please Enter Your OPENAI API KEY")
+
+openai_model = OpenAIModel(
+    api_key=api,
+    parameters={
+        "model": "gpt-4-turbo-preview",
+        "temperature": 0.2,
+        "max_tokens": 1500,
+    },
+)
 
 
 st.sidebar.markdown("This app Uses Lyzr Automata to Curate Insurance Underwriting.You need to enter Applicant Information and Their Personal And Health Information. It will Curate A Insurance Underwritng Document for You.")
