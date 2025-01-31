@@ -1,14 +1,10 @@
 import os
-
 import streamlit as st
-from lyzr_automata.ai_models.openai import OpenAIModel
-from lyzr_automata import Agent,Task
-from lyzr_automata.pipelines.linear_sync_pipeline import LinearSyncPipeline
 from PIL import Image
 from dotenv import load_dotenv
 
 load_dotenv()
-api = os.getenv("OPENAI_API_KEY")
+api = os.getenv("LYZR_KEY")
 
 st.set_page_config(
     page_title="Insurance Underwriting Expert🏦",
@@ -34,15 +30,6 @@ st.sidebar.image(image, width=150)
 # App title and introduction
 st.sidebar.title("Insurance Underwriting Expert")
 st.sidebar.markdown("## Welcome to the Lyzr Insurance Underwriting Expert!")
-
-openai_model = OpenAIModel(
-    api_key=api,
-    parameters={
-        "model": "gpt-4-turbo-preview",
-        "temperature": 0.2,
-        "max_tokens": 1500,
-    },
-)
 
 
 st.sidebar.markdown("This app Uses Lyzr Automata to Curate Insurance Underwriting.You need to enter Applicant Information and Their Personal And Health Information. It will Curate A Insurance Underwritng Document for You.")
@@ -111,56 +98,34 @@ Based on the risk score of 0.65 and the comprehensive assessment, the underwriti
 For any questions or further assistance, please contact our customer service team at 1-800-LIFEPOLICY or email support@lifeinsurancecompany.com.
 """
 
+import requests
 
-def insurance_underwriting():
-    insurance_agent = Agent(
-        role="Insurance Consultant",
-        prompt_persona=f"You are an Expert Insurance Underwriter.Your Task is to generate Risk Assessment summary,Underwriting Decision,Policy Terms & Condition,Approval Condition and Policy Issuance."
-    )
+def send_message_to_agent():
+    url = "https://agent-prod.studio.lyzr.ai/v3/inference/chat/"
+    headers = {
+        "Content-Type": "application/json",
+        "x-api-key": api
+    }
+    payload = {
+        "user_id": "harshit@lyzr.ai",
+        "agent_id": "679cbc2ff29fe372263c837a",
+        "session_id": "679cbc2ff29fe372263c837a",
+        "message": f"""
+        name: {st.session_state.form1_data['name']}
+        Age: {st.session_state.form1_data['age']}
+        Personal and Health Information:
+        Occupation: {st.session_state.form2_data['occupation']}
+        Annual Income: {st.session_state.form2_data['annual_income']}
+        Marital Status: {st.session_state.form2_data['marital_status']}
+        Medical_history: {st.session_state.form2_data['medical_history']}
+        Dependents: {st.session_state.form2_data['dependents']}
+        Lifestyle: {st.session_state.form2_data['lifestyle']}
+        Family Medical History: {st.session_state.form2_data['family_medical_history']}
+        """
+    }
 
-    prompt = f"""
-    You are a Insurance Underwriting expert.
-    Based On Below Input:
-    Applicant Information:
-    name: {st.session_state.form1_data['name']}
-    Age: {st.session_state.form1_data['age']}
-    Personal and Health Information:
-    Occupation: {st.session_state.form2_data['occupation']}
-    Annual Income: {st.session_state.form2_data['annual_income']}
-    Marital Status: {st.session_state.form2_data['marital_status']}
-    Medical_history: {st.session_state.form2_data['medical_history']}
-    Dependents: {st.session_state.form2_data['dependents']}
-    Lifestyle: {st.session_state.form2_data['lifestyle']}
-    Family Medical History: {st.session_state.form2_data['family_medical_history']}
-    
-    Follow Given Steps:
-    1/ CALCULATE Risk Status Based On Personal And Health Information [Risk Status: Low,Neutral,High]
-    2/ BASED ON RISK STATUS write an Insurance Underwriting
-    3/ Consider The Following Format to write Insurance Underwriting
-    
-    Example: 
-    Risk Status : Low
-    {example}
-    """
-
-    underwriting_task = Task(
-        name="Insurance Underwriting",
-        model=openai_model,
-        agent=insurance_agent,
-        instructions=prompt,
-    )
-
-    output = LinearSyncPipeline(
-        name="Insurance underwriting Pipline",
-        completion_message="Underwriting completed",
-        tasks=[
-            underwriting_task
-        ],
-    ).run()
-
-    answer = output[0]['task_output']
-
-    return answer
+    response = requests.post(url, json=payload, headers=headers)
+    return response.json()['response']
 
 
 # Main function to run the Streamlit app
@@ -197,7 +162,7 @@ def main():
 
     elif page == "Result":
         st.title("Result Page")
-        result = insurance_underwriting()
+        result = send_message_to_agent()
         st.markdown(result)
 
 if __name__ == "__main__":
