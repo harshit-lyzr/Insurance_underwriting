@@ -30,87 +30,15 @@ st.sidebar.image(image, width=150)
 # App title and introduction
 st.sidebar.title("Insurance Underwriting Expert")
 st.sidebar.markdown("## Welcome to the Lyzr Insurance Underwriting Expert!")
+st.sidebar.markdown("Powered By [Lyzr Agent Studio](https://studio.lyzr.ai/)")
 
 
 st.sidebar.markdown("This app Uses Lyzr Automata to Curate Insurance Underwriting.You need to enter Applicant Information and Their Personal And Health Information. It will Curate A Insurance Underwritng Document for You.")
 
 
-example= f"""
-#### *Risk Assessment Summary*
-A risk score of 0.65 indicates a moderate level of risk. This score takes into account factors such as age, health, lifestyle, occupation, and family medical history. While the applicant presents a generally low-risk profile, the score suggests some areas of potential concern that require consideration in the policy terms.
-
-#### *Underwriting Decision*
-
-Based on the risk score of 0.65 and the comprehensive assessment, the underwriting decision includes the following terms and conditions:
-
-#### *Policy Terms and Conditions*
-
-1.⁠ ⁠*Policy Type*:
-   - 20-Year Term Life Insurance
-
-2.⁠ ⁠*Coverage Amount*:
-   - $500,000
-
-3.⁠ ⁠*Premium Calculation*:
-   - *Base Premium*: $750 per year
-   - *Risk Score Adjustment*: +10% ($75)
-   - *Total Annual Premium*: $825
-
-4.⁠ ⁠*Payment Options*:
-   - Annual Payment: $825
-   - Semi-Annual Payment: $420 (x2)
-   - Monthly Payment: $70 (x12)
-
-5.⁠ ⁠*Policy Riders*:
-   - *Accidental Death Benefit Rider*: Additional $100,000 coverage for $50 per year
-   - *Waiver of Premium Rider*: Waives premium payments in case of total disability for $40 per year
-   - *Child Term Rider*: $10,000 coverage per child for $50 per year
-
-6.⁠ ⁠*Exclusions*:
-   - *Suicide Clause*: No payout if the insured commits suicide within the first two years of the policy
-   - *High-Risk Activities*: No coverage for death resulting from participation in high-risk activities such as skydiving, scuba diving, or racing
-   - *Illegal Activities*: No coverage for death resulting from involvement in illegal activities
-
-7.⁠ ⁠*Medical Examination*:
-   - A medical examination is required to confirm the applicant’s health status. The examination must be completed within 30 days of policy approval. The cost will be covered by the insurance company.
-
-8.⁠ ⁠*Renewal and Conversion*:
-   - The policy can be renewed at the end of the 20-year term, subject to a re-evaluation of risk factors and premium adjustment.
-   - The policyholder has the option to convert the term policy into a whole life policy without additional medical examination before the age of 60.
-
-9.⁠ ⁠*Beneficiary Designation*:
-   - Primary Beneficiary: Jane Doe (Spouse)
-   - Contingent Beneficiaries: John Doe Jr. and Jane Doe Jr. (Children)
-
-#### *Approval Conditions*
-1.⁠ ⁠*Verification of Information*:
-   - Confirmation of personal and health information provided during the application process.
-
-2.⁠ ⁠*Medical Examination*:
-   - Completion and satisfactory results of the required medical examination.
-
-#### *Policy Issuance*
-•⁠  ⁠*Policy Effective Date*: June 1, 2024
-•⁠  ⁠*Renewal Date*: June 1, 2044
-•⁠  ⁠*Policyholder Signature*: Required on the policy document to confirm acceptance of terms and conditions.
-
-#### *Contact Information*
-For any questions or further assistance, please contact our customer service team at 1-800-LIFEPOLICY or email support@lifeinsurancecompany.com.
-"""
-
 import requests
 
-def send_message_to_agent():
-    url = "https://agent-prod.studio.lyzr.ai/v3/inference/chat/"
-    headers = {
-        "Content-Type": "application/json",
-        "x-api-key": api
-    }
-    payload = {
-        "user_id": "harshit@lyzr.ai",
-        "agent_id": "679cbc2ff29fe372263c837a",
-        "session_id": "679cbc2ff29fe372263c837a",
-        "message": f"""
+message = f"""
         name: {st.session_state.form1_data['name']}
         Age: {st.session_state.form1_data['age']}
         Personal and Health Information:
@@ -122,10 +50,22 @@ def send_message_to_agent():
         Lifestyle: {st.session_state.form2_data['lifestyle']}
         Family Medical History: {st.session_state.form2_data['family_medical_history']}
         """
+
+def send_message_to_agent():
+    url = "https://agent-prod.studio.lyzr.ai/v3/inference/chat/"
+    headers = {
+        "Content-Type": "application/json",
+        "x-api-key": api
+    }
+    payload = {
+        "user_id": "harshit@lyzr.ai",
+        "agent_id": "679cbc2ff29fe372263c837a",
+        "session_id": "679cbc2ff29fe372263c837a",
+        "message": "hrllo"
     }
 
     response = requests.post(url, json=payload, headers=headers)
-    return response.json()['response']
+    return response
 
 
 # Main function to run the Streamlit app
@@ -164,6 +104,7 @@ def main():
         st.title("Result Page")
         result = send_message_to_agent()
         st.markdown(result)
+
 
 if __name__ == "__main__":
     main()
